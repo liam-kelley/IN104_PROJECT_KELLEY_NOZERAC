@@ -1,5 +1,3 @@
-# executez ce script dans un terminal (depuis n'importe quel repertoire)
-# avec la commande python -m IN104_PROJECT_NOM1_NOM2.scripts.test_minimax
 import random
 import argparse
 import time
