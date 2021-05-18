@@ -159,9 +159,9 @@ def evaluate(gameState):
 
 				elif weight[k]==7 or weight[k]==11:
 					if currentCell.color==aiarena.connect4.cell.WHITE:
-						scoreWhite=scoreWhite+10000
+						scoreWhite=scoreWhite+100000
 					elif currentCell.color==aiarena.connect4.cell.BLACK:
-						scoreBlack=scoreBlack+10000
+						scoreBlack=scoreBlack+100000
 
 				elif weight[k]==32:
 					if currentCell.color==aiarena.connect4.cell.WHITE:
@@ -189,16 +189,10 @@ def evaluate(gameState):
 
 				elif weight[k]==48:
 					if currentCell.color==aiarena.connect4.cell.WHITE:
-						scoreWhite=scoreWhite-50
+						scoreWhite=scoreWhite+50
 					elif currentCell.color==aiarena.connect4.cell.BLACK:
-						scoreBlack=scoreBlack-50
+						scoreBlack=scoreBlack+50
 
-
-				elif weight[k]==40:
-					if currentCell.color==aiarena.connect4.cell.WHITE:
-						scoreWhite=scoreWhite-300
-					elif currentCell.color==aiarena.connect4.cell.BLACK:
-						scoreBlack=scoreBlack-300
 
 				elif weight[k]==65 or weight[k]==18:
 					if currentCell.color==aiarena.connect4.cell.WHITE:
@@ -214,9 +208,15 @@ def evaluate(gameState):
 
 				elif weight[k]==4 or weight[k]==8:
 					if currentCell.color==aiarena.connect4.cell.WHITE:
-						scoreWhite=scoreWhite+150
+						scoreWhite=scoreWhite-300
 					elif currentCell.color==aiarena.connect4.cell.BLACK:
-						scoreBlack=scoreBlack+150
+						scoreBlack=scoreBlack-150
+
+				elif weight[k]==20 or weight[k]==40:
+					if currentCell.color==aiarena.connect4.cell.WHITE:
+						scoreWhite=scoreWhite-300
+					elif currentCell.color==aiarena.connect4.cell.BLACK:
+						scoreBlack=scoreBlack-300
 
 				elif weight[k]==26 or weight[k]==30 or weight[k]==90 or weight[k]==67:
 					if currentCell.color==aiarena.connect4.cell.WHITE:
@@ -313,6 +313,12 @@ def evaluate(gameState):
 						scoreWhite=scoreWhite+50
 					elif currentCell.color==aiarena.connect4.cell.BLACK:
 						scoreBlack=scoreBlack+50
+
+				elif weight[k]==64 or weight[k]==128:
+					if currentCell.color==aiarena.connect4.cell.WHITE:
+						scoreWhite=scoreWhite-10
+					elif currentCell.color==aiarena.connect4.cell.BLACK:
+						scoreBlack=scoreBlack-10
 
 
 			if w==3:

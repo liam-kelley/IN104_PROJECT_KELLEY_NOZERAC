@@ -6,17 +6,17 @@ from ..minimaxBrainLiam import MinimaxBrainLiam
 from ..minimaxAlphaBetaBrain import MinimaxAlphaBetaBrain
 from .randomBrain import RandomBrain
 from ..minimaxBrainSmart import MinimaxBrainSmart
+from ..minimaxIterDeepBrain import MinimaxIterDeepBrain
 
 
 # Lancer une partie entre votre IA MinimaxBrain et un humain sur le puissance4 ou aux dames
 
-brain1 = MinimaxBrainSmart(aiarena.connect4)
-brain1.depth=5
+brain1 = MinimaxIterDeepBrain(aiarena.connect4)
 #brain2 = MinimaxBrain(aiarena.connect4)
 #brain2.depth=2
-brain2 = MinimaxAlphaBetaBrain(aiarena.connect4)
-brain2.depth=5
-timeLimit = 10
+brain2 = MinimaxBrainSmart(aiarena.connect4)
+brain2.depth=3
+timeLimit=5
 game = aiarena.Game(aiarena.connect4, brain1, timeLimit, brain2, timeLimit)
 game.displayLevel=1
 game.start()

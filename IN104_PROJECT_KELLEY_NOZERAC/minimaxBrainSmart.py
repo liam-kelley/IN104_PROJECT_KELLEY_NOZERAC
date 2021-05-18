@@ -15,7 +15,7 @@ evaluations_functions = {
 class MinimaxBrainSmart:
 
     def __init__(self, gameclass, gameclass_arguments={}):
-        self.depth = 3      # Set the exploration depth here
+        self.depth = 1      # Set the exploration depth here
         self.get_children = gameclass.GameState.findNextStates
         self.evaluate = evaluations_functions[gameclass]
         print("Please enter AI name")
@@ -34,7 +34,7 @@ class MinimaxBrainSmart:
             if possibleScore[i]>bestScore:
                 bestScore=possibleScore[i]
                 bestScoreIndex=i
-        time.sleep(0.1)
+        time.sleep(1)
         return possibleMoves[bestScoreIndex]
 
 
