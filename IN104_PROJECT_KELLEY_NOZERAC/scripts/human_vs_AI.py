@@ -13,7 +13,7 @@ brain2 = RandomBrain()
 #brain2 = MinimaxIterDeepBrain(aiarena.connect4)
 brain1 = MinimaxBrainSmart(aiarena.checkers)
 timeLimit = 20
-brain2.depth=1
+brain1.depth=5
 game = aiarena.Game(aiarena.checkers, brain1, timeLimit, brain2, timeLimit)
 game.displayLevel=1
 game.start()

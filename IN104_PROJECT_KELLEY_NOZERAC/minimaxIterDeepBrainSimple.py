@@ -1,7 +1,7 @@
 import aiarena
 # changer l'import ci-dessous pour changer la version de minimax utilisée
 from .minimax.limited_time import minimax
-from .evaluation_functions import connect4c, checkers2
+from .evaluation_functions import connect4c, checkers2simple
 
 import sys
 import signal
@@ -10,7 +10,7 @@ import time
 
 # definition d'un dictionaire qui associe à chaque jeu une fonction d'évaluation
 evaluations_functions = {
-    aiarena.checkers: checkers2.evaluate,
+    aiarena.checkers: checkers2simple.evaluate,
     aiarena.connect4: connect4c.evaluate
 }
 
@@ -18,7 +18,7 @@ evaluations_functions = {
 def handler(a,b):
     raise NameError()
 
-class MinimaxIterDeepBrain:
+class MinimaxIterDeepBrainSimple:
 
     def __init__(self, gameclass, gameclass_arguments={}):
         self.depth = 1      # Set the exploration depth here
@@ -35,8 +35,8 @@ class MinimaxIterDeepBrain:
         possibleScore=[]
         availableScore=[]
         signal.signal(signal.SIGALRM, handler)
-        signal.setitimer(signal.ITIMER_REAL, timeLimit-0.05, 0.0) #0.05 seconds de marge
-
+        signal.setitimer(signal.ITIMER_REAL, timeLimit-0.05, 0.0) #0.1 seconds de marge
+        
         # if timeLimit>=10:
         #     self.depth=5
         # elif timeLimit>=5:
