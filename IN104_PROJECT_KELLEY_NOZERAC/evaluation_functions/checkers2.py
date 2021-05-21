@@ -5,9 +5,23 @@ from aiarena.checkers import cell
 def evaluate(gameState): #Think about King/Queen rules (rules['Kings can fly'])
 	# board = aiarena.checkers.GameState()
 	# how to read game rules ?
-	nbRows=8				
+
+	nbRows=8
 	nbColumns=8
+
+	nbRows=gameState.nRows				
+	nbColumns=gameState.nRows
+
+
 	kValue=1.95 #It's better to have two simples than a king
+
+	kingRules=False
+
+	if kingRules==False:
+		kValue=1.95
+	else:
+		kValue=5
+
 	# if 'kings can fly'==False:
 	# 	kValue=1.95
 	# else:
