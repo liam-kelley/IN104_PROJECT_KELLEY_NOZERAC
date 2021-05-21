@@ -3,9 +3,15 @@ import math
 from aiarena.checkers import cell
 
 def evaluate(gameState): #Think about King/Queen rules (rules['Kings can fly'])
-	board = aiarena.checkers.GameState()
-	nbRows=8
+	# board = aiarena.checkers.GameState()
+	# how to read game rules ?
+	nbRows=8				
 	nbColumns=8
+	kValue=1.95 #It's better to have two simples than a king
+	# if 'kings can fly'==False:
+	# 	kValue=1.95
+	# else:
+	# 	kValue=5
 
 	v1=math.ceil(nbColumns/4)
 	v2=math.floor(nbColumns/2)
@@ -20,7 +26,6 @@ def evaluate(gameState): #Think about King/Queen rules (rules['Kings can fly'])
 	mValue=0
 	endmodifier=0
 	advancement=0
-	stopkillingyourselfplease=0
 	wThreatened=0
 	bThreatened=0
 
@@ -50,12 +55,10 @@ def evaluate(gameState): #Think about King/Queen rules (rules['Kings can fly'])
 						#W-COUNTING
 						if currentCell.type==aiarena.checkers.cell.MAN:
 							wCount+=1
-							advancement+=v/(10*nbRows)			#valorise avancement sur la board --> incite a avancer les pions les plus en arriere, mais cest tres marginal
+							advancement+=((nbRows-v)/nbRows)**0.5			#valorise avancement sur la board --> incite a avancer les pions les plus en arriere, mais cest tres marginal
 						elif currentCell.type==aiarena.checkers.cell.KING:	
 							wCount+=1
-							wKCount+=1									#It's better to have two simples than a king
-							#if rules['Kings can fly']==True:	
-							#	wCount+=3
+							wKCount+=1
 
 						#W-MIDDLE VALUING
 						if h>=v1 and h<=v1+v2 and v>=v3 and v<= v3+v4:
@@ -71,7 +74,7 @@ def evaluate(gameState): #Think about King/Queen rules (rules['Kings can fly'])
 									nextCell=gameState.getCell(h-2,v-2)
 									if nextCell.type!=aiarena.checkers.cell.NONE:
 										if nextCell.isWhite==False:
-											mobility-=0.5
+											mobility-=2		
 
 							elif nextCell.isWhite==False: #W-THREATENED	si qqch au coin devant gauche
 								wThreatened+=1
@@ -92,7 +95,7 @@ def evaluate(gameState): #Think about King/Queen rules (rules['Kings can fly'])
 									nextCell=gameState.getCell(h+2,v-2)
 									if nextCell.type!=aiarena.checkers.cell.NONE:
 										if nextCell.isWhite==False:
-											mobility-=0.5
+											mobility-=2
 
 							elif nextCell.isWhite==False: #W-THREATENED	si qqch au coin devant droite
 								wThreatened+=1
@@ -145,7 +148,7 @@ def evaluate(gameState): #Think about King/Queen rules (rules['Kings can fly'])
 									nextCell=gameState.getCell(h-2,v+2)
 									if nextCell.type!=aiarena.checkers.cell.NONE:
 										if nextCell.isWhite==True:
-											mobility+=0.65
+											mobility+=2
 
 							elif nextCell.isWhite==True: #B-THREATENED	si qqch au coin derriere gauche
 								bThreatened+=1
@@ -166,7 +169,7 @@ def evaluate(gameState): #Think about King/Queen rules (rules['Kings can fly'])
 									nextCell=gameState.getCell(h+2,v+2)
 									if nextCell.type!=aiarena.checkers.cell.NONE:
 										if nextCell.isWhite==True:
-											mobility+=0.65
+											mobility+=2
 
 							elif nextCell.isWhite==True: #B-THREATENED	si qqch au coin derriere droite
 								bThreatened+=1
@@ -187,22 +190,30 @@ def evaluate(gameState): #Think about King/Queen rules (rules['Kings can fly'])
 								nextCell=gameState.getCell(h+1,v-1)
 								if nextCell.type==aiarena.checkers.cell.NONE:
 									mobility-=1													
-	
-	# # MiDGAME STRATEGY
-	# if wCount + bCount >= 12:
-	# 	stopkillingyourselfplease=0.3*wCount
-	# else:	# LATE GAME STRATEGY (stopping )
-	# 	mValue=1
-	# 	stopkillingyourselfplease=max(wCount,6)*0.3
 
-	# ENDGAME STRATEGY
+	# Midlle Valuing Nerf (valoriser au maximum 2 pieces au milieu)
+	mValue=max(min(mValue,1),-1)
+
+	# # OPENING STRATEGY
+	# if wCount + bCount >= 23:
+	# 	mValue=mValue*2
+
+	# # ENDGAME STRATEGY
+	# if wCount + bCount <= 12:
+	# 	mValue=0.5
+	# 	wKCount=wKCount*(1+0.1*(12-wCount + bCount))
+	# 	advancement=advancement*(12-wCount + bCount)
+
+	# if wCount + bCount <= 12:
+	# 	mValue=0.5 # stop counting mValues
+	# 	wKCount=wKCount*1.1 # kings are more important at the end
+	# 	bKCount=bKCount*1.1	
+	# 	advancement=advancement*4 # moving up pieces becomes very important at the end
+	# # 	#xxx valuing trades at the end
+
+	# Win detect
 	if bCount == 0:
 		endmodifier=10000
 
-	# Pas trop de pieces au milieu silvousplait (max 2)
-	mValue=max(min(mValue,1),-1)
-
-	#Opening strategy was "perfect" at some point
-
-	return ((wCount-wKCount*0.05-bCount+wKCount*0.05)*3+advancement+mobility+endmodifier+mValue*3+stopkillingyourselfplease+(bThreatened-wThreatened)*1.5)
+	return ((wCount+wKCount*(kValue-1)-bCount-bKCount*(kValue-1))*4	+advancement/(10*nbRows*nbRows)	+mobility	+endmodifier	+mValue*4	-wThreatened)
     

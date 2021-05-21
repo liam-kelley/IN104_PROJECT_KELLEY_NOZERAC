@@ -1,18 +1,18 @@
 import aiarena
 # changer l'import ci-dessous pour changer la version de minimax utilisée
 from .minimax.limited_depth_alpha import minimax
-from .evaluation_functions import connect4c, checkers2simple
+from .evaluation_functions import connect4c, checkers2
 
 import sys
 import time
 
 # definition d'un dictionaire qui associe à chaque jeu une fonction d'évaluation
 evaluations_functions = {
-    aiarena.checkers: checkers2simple.evaluate,
+    aiarena.checkers: checkers2.evaluate,
     aiarena.connect4: connect4c.evaluate
 }
 
-class MinimaxBrainSmart:
+class MinimaxBrainSmart2:
 
     def __init__(self, gameclass, gameclass_arguments={}):
         self.depth = 1      # Set the exploration depth here
