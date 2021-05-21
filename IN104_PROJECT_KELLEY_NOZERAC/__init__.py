@@ -1,1 +1,1 @@
-from ..minimaxIterDeepBrain import MinimaxIterDeepBrain as default_AI
+from .minimaxIterDeepBrain import MinimaxIterDeepBrain as default_AI
