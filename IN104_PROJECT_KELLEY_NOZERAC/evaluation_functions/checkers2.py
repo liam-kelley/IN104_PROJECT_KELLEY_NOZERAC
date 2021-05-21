@@ -12,11 +12,29 @@ def evaluate(gameState): #Think about King/Queen rules (rules['Kings can fly'])
 	v3=math.ceil(nbRows/4)
 	v4=math.floor(nbRows/2)
 
-	wCount=0		#Utilité d'utiliser deux counts positifs au lieu d'un count relatif: pouvoir déterminer l'état du jeu
+	wCount=0
+	wKCount=0		#Utilité d'utiliser deux counts positifs au lieu d'un count relatif: pouvoir déterminer l'état du jeu
 	bCount=0
+	bKCount=0
 	mobility=0
+	mValue=0
 	endmodifier=0
 	advancement=0
+	stopkillingyourselfplease=0
+	wThreatened=0
+	bThreatened=0
+
+#   ,----------------,    ,----------------,
+# 0 |   *   *   *   *|    |   0   1   2   3|
+# 1 | *   *   *   *  |    | 4   5   6   7  |
+# 2 |   *   *   *   *|    |   8   9  10  11|
+# 3 |                |    |12  13  14  15  |
+# 4 |                |    |  16  17  18  19|
+# 5 | o   o   o   o  |    |20  21  22  23  |
+# 6 |   o   o   o   o|    |  24  25  26  27|
+# 7 | o   o   o   o  |    |28  29  30  31  |
+#   '----------------'    '----------------'
+#     0 1 2 3 4 5 6 7
 	
 	#COUNTING
 
@@ -27,43 +45,64 @@ def evaluate(gameState): #Think about King/Queen rules (rules['Kings can fly'])
 				currentCell=gameState.getCell(h,v)
 
 				if currentCell.type!=aiarena.checkers.cell.NONE:
-					if currentCell.isWhite==True:
+					if currentCell.isWhite==True: ########################################White Section########################################
 						
 						#W-COUNTING
 						if currentCell.type==aiarena.checkers.cell.MAN:
 							wCount+=1
-							advancement+=v/(10*nbRows)			#valorise avancement sur la board --> incite a avancer les pions
+							advancement+=v/(10*nbRows)			#valorise avancement sur la board --> incite a avancer les pions les plus en arriere, mais cest tres marginal
 						elif currentCell.type==aiarena.checkers.cell.KING:	
-							wCount+=1.95									#It's better to have two simples than a king
+							wCount+=1
+							wKCount+=1									#It's better to have two simples than a king
 							#if rules['Kings can fly']==True:	
 							#	wCount+=3
 
 						#W-MIDDLE VALUING
 						if h>=v1 and h<=v1+v2 and v>=v3 and v<= v3+v4:
-							wCount+=0.5
+							mValue+=0.5
 
-						#W-MOBILITY											
-						if h>0 and v>0:										#it seems important to take into account blocked mobility
+						#W-MOBILITY and #W-THREATENED									
+						if h>0 and v>0:#coin devant gauche				
 							nextCell=gameState.getCell(h-1,v-1)
 							if nextCell.type==aiarena.checkers.cell.NONE:
 								mobility+=1
 
-								if h-1>0 and v-1>0:#LOOKING EVEN FURTHEER
+								if h-1>0 and v-1>0:#LOOKING EVEN FURTHEER for blocked mobility (does this work?) [acronyme : LEF]
 									nextCell=gameState.getCell(h-2,v-2)
 									if nextCell.type!=aiarena.checkers.cell.NONE:
 										if nextCell.isWhite==False:
 											mobility-=0.5
 
-						if h<nbRows-1 and v>0:
+							elif nextCell.isWhite==False: #W-THREATENED	si qqch au coin devant gauche
+								wThreatened+=1
+								# BUT threat only if nothing behing him in opposite corner OR wall!
+								if h<nbColumns-1 and v<nbRows-1:
+									nextCell=gameState.getCell(h+1,v+1)
+									if nextCell.type!=aiarena.checkers.cell.NONE:
+										wThreatened-=1
+								else:
+									wThreatened-=1
+
+						if h<nbColumns-1 and v>0:
 							nextCell=gameState.getCell(h+1,v-1)
 							if nextCell.type==aiarena.checkers.cell.NONE:
 								mobility+=1
 
-								if h+1<nbRows-1 and v-1>0:#LOOKING EVEN FURTHEER
+								if h+1<nbColumns-1 and v-1>0:#LEF
 									nextCell=gameState.getCell(h+2,v-2)
 									if nextCell.type!=aiarena.checkers.cell.NONE:
 										if nextCell.isWhite==False:
 											mobility-=0.5
+
+							elif nextCell.isWhite==False: #W-THREATENED	si qqch au coin devant droite
+								wThreatened+=1
+								# BUT threat only if nothing behing him in opposite corner OR wall!
+								if h>0 and v<nbRows-1:
+									nextCell=gameState.getCell(h-1,v+1)
+									if nextCell.type!=aiarena.checkers.cell.NONE:
+										wThreatened-=1
+								else:
+									wThreatened-=1
 
 						if currentCell.type==aiarena.checkers.cell.KING:		#King mobility
 							if h>0 and v<nbRows-1:
@@ -76,44 +115,68 @@ def evaluate(gameState): #Think about King/Queen rules (rules['Kings can fly'])
 								nextCell=gameState.getCell(h+1,v+1)
 								if nextCell.type==aiarena.checkers.cell.NONE:
 									mobility+=1
+
+
+
 					
-					else:
+					else:########################################Black Section########################################
 
 						#B-COUNTING
 						if currentCell.type==aiarena.checkers.cell.MAN:	
 							bCount+=1
-							advancement-=(nbRows-v)/(10*nbRows)
+							# advancement-=(nbRows-v)/(10*nbRows)    		#Not counting advancement of enemy will stop back line from opening up for an "advantageous trade" when it really isnt
 						elif currentCell.type==aiarena.checkers.cell.KING:	
-							bCount+=1.95
+							bCount+=1
+							bKCount+=1
 							#if rules['Kings can fly']==True:	
 							#	bCount+=3
 
 						#B-MIDDLE VALUING
 						if h>=v1 and h<=v1+v2 and v>=v3 and v<= v3+v4:
-							bCount+=0.5
+							mValue-=0.5
 
-						#B-MOBILITY
+						#B-MOBILITY and B-THREATENED
 						if h>0 and v<nbRows-1:			
 							nextCell=gameState.getCell(h-1,v+1)
-							if nextCell.type==aiarena.checkers.cell.NONE:
+							if nextCell.type==aiarena.checkers.cell.NONE:#B-MOBILITY
 								mobility-=1
 
 								if h-1>0 and v+1<nbRows-1:#LOOKING EVEN FURTHEER
 									nextCell=gameState.getCell(h-2,v+2)
 									if nextCell.type!=aiarena.checkers.cell.NONE:
 										if nextCell.isWhite==True:
-											mobility+=0.5
+											mobility+=0.65
+
+							elif nextCell.isWhite==True: #B-THREATENED	si qqch au coin derriere gauche
+								bThreatened+=1
+								# BUT threat only if nothing behing him in opposite corner OR wall!
+								if h<nbColumns-1 and v>0:
+									nextCell=gameState.getCell(h+1,v-1)
+									if nextCell.type!=aiarena.checkers.cell.NONE:
+										bThreatened-=1
+								else:
+									bThreatened-=1
 
 						if h<nbRows-1 and v<nbRows-1:
 							nextCell=gameState.getCell(h+1,v+1)
-							if nextCell.type==aiarena.checkers.cell.NONE:
+							if nextCell.type==aiarena.checkers.cell.NONE:#B-MOBILITY
 								mobility-=1
 
 								if h+1<nbRows-1 and v+1<nbRows-1:#LOOKING EVEN FURTHEER
 									nextCell=gameState.getCell(h+2,v+2)
 									if nextCell.type!=aiarena.checkers.cell.NONE:
 										if nextCell.isWhite==True:
-											mobility+=0.5
+											mobility+=0.65
+
+							elif nextCell.isWhite==True: #B-THREATENED	si qqch au coin derriere droite
+								bThreatened+=1
+								# BUT threat only if nothing behing him in opposite corner OR wall!
+								if h>0 and v>0:
+									nextCell=gameState.getCell(h-1,v-1)
+									if nextCell.type!=aiarena.checkers.cell.NONE:
+										bThreatened-=1
+								else:
+									bThreatened-=1
 
 						if currentCell.type==aiarena.checkers.cell.KING:		#King mobility
 							if h>0 and v>0:
@@ -125,12 +188,21 @@ def evaluate(gameState): #Think about King/Queen rules (rules['Kings can fly'])
 								if nextCell.type==aiarena.checkers.cell.NONE:
 									mobility-=1													
 	
+	# # MiDGAME STRATEGY
+	# if wCount + bCount >= 12:
+	# 	stopkillingyourselfplease=0.3*wCount
+	# else:	# LATE GAME STRATEGY (stopping )
+	# 	mValue=1
+	# 	stopkillingyourselfplease=max(wCount,6)*0.3
+
 	# ENDGAME STRATEGY
 	if bCount == 0:
 		endmodifier=10000
 
+	# Pas trop de pieces au milieu silvousplait (max 2)
+	mValue=max(min(mValue,1),-1)
 
 	#Opening strategy was "perfect" at some point
 
-	return ((wCount-bCount)*3+advancement+mobility+endmodifier)
+	return ((wCount-wKCount*0.05-bCount+wKCount*0.05)*3+advancement+mobility+endmodifier+mValue*3+stopkillingyourselfplease+(bThreatened-wThreatened)*1.5)
     

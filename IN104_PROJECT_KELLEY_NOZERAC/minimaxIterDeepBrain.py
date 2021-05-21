@@ -60,6 +60,8 @@ class MinimaxIterDeepBrain:
                     availableScore.append(minimax(children[i], False, self.get_children, self.evaluate, self.depth+k, float('-inf'), float('inf')))
                 possibleScore=copy.deepcopy(availableScore)
                 k+=1
+                if k>=6:
+                    signal.setitimer(signal.ITIMER_REAL, 0.00001, 0.0)
 
             signal.setitimer(signal.ITIMER_REAL, 0.00001, 0.0)
 
