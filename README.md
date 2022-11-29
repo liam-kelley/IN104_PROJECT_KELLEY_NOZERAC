@@ -1,4 +1,2 @@
-Ceci est le README de votre package
-###################################
-
-C'est ici que l'on met habituellement les informations utiles aux utilisateurs de votre package
+During this project we implemented Min-Max AI for Connect 4 and checkers.
+We had the best performance for checkers.
